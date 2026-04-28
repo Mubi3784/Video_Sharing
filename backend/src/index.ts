@@ -9,7 +9,7 @@ dotenv.config();
 
 connectDb(); // running the function from /config/db
 
-app.use(passportJwtStrategy.initialize)
+app.use(passportJwtStrategy.initialize())
 const port= process.env.PORT || 3030;
 
 app.use(express.json());
@@ -19,3 +19,4 @@ app.use('/api/v1', routes)
 app.listen(port, ()=>{
     console.log(` Server is running on the  port ${port}`)
 })
+
