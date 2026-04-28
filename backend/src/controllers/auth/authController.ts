@@ -1,8 +1,9 @@
 import {Request, Response, RequestHandler} from "express"
 import User from "../../model/userSchema"
 import {sendResponse} from "../../utils/sendResponse"
+import { generateWebToken } from "../../utils/generateJwtToken";
 import crypto from "crypto";
-import { hashPassword } from "../../utils/passwordHelper";
+import { hashPassword , comparePassword} from "../../utils/passwordHelper";
 
 interface RegisterReq extends Request{
     body:{
@@ -10,8 +11,8 @@ interface RegisterReq extends Request{
         password: string
     }
 }
-
-export const signUpUser: RequestHandler= async(req:RegisterReq,res:Response)=>{
+//
+export const signUpUser = async(req:RegisterReq,res:Response)=>{
  try{
     const {email, password}= req.body;
     const existingUser= await User.findOne({email});
@@ -32,9 +33,31 @@ export const signUpUser: RequestHandler= async(req:RegisterReq,res:Response)=>{
     // send respronse successfully 
    return  sendResponse(res,200, true ,"user added successfully ") // here we remove this{user: newUser}
 }
-catch(error){
+    catch(error){
     console.error(`Error in Signup ${error}`)
     //send a error response 
     return  sendResponse(res,500, false ," internal error ")
  }
+}
+
+
+export const signInUser: RequestHandler= async(req:RegisterReq, res:Response)=>{
+    try {
+        const { email, password}= req.body;
+        const user= await User.findOne({email})
+        if(!user){
+            return  sendResponse(res,404, false , "User doesnot exists")
+        }
+        const matchPassword= await comparePassword(password, user.password)
+        if(!matchPassword){
+            return sendResponse(res,404,false,"Invalid Username and Password")
+        }
+        const jwtToken= await generateWebToken;
+        sendResponse(res,200,true,"loggin successfully ",{user:jwtToken})
+        
+    } catch (error) {
+        console.error(`Error in autentication ${error}`);
+        return sendResponse(res,500,false,"Internal server error");
+        
+    }
 }
