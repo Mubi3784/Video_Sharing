@@ -6,6 +6,9 @@ import type { authFormData } from "../../type";
 
 // now we are using the state. An array distructor  having formData(which holds the data ) and setFormData( a function which is used to change the data )
 
+
+const signIn: React.FC = () => {
+  
 const [formData, setFormData] = useState<authFormData>({
   email: "",
   password: "",
@@ -27,8 +30,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     `you have successfully login ${formData.email} , ${formData.password}`,
   );
 };
-
-const signIn: React.FC = () => {
   return (
     <Layout>
       <div className="flex flex-col ">
