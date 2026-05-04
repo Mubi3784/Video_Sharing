@@ -6,6 +6,8 @@ import SignIn from "./Pages/Auth/SignIn";
 
 // in the function parameter make an array  and define each route here  with path and element
 const router=createBrowserRouter([
+
+    {path:"/",element:<SignUp />},
     {path:"/signUp",element:<SignUp />},
 
     {path:"/signIn",element:<SignIn />}

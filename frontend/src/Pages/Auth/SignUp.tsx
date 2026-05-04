@@ -1,5 +1,5 @@
  import React from "react";
-import Layout from "/document/Self Learning/Full_Stack/Projects/Project_1/Video_Sharing_App/frontend/src/Components/Layout";
+import Layout from "../../Components/Layout";
 import { Link } from "react-router-dom";
 import type { authFormData } from "../../type";
 import { useState } from "react";
@@ -78,7 +78,7 @@ const SignUp: React.FC = () => {
             </button>
 
             <div className=" flex gap-2  mt-2">
-              <p>Already have an account?</p>
+              <p>Already have an account?</p>_
               <Link
                 to={"/signIn"}
                 className="text-emerald-500 font-semibold hover:text-blue-900"
