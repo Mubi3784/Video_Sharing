@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../Reducer/store";
@@ -9,6 +9,7 @@ import { LuUpload } from "react-icons/lu";
 import { HiMiniVideoCamera } from "react-icons/hi2";
 import { SlSettings } from "react-icons/sl";
 import { IoLogOutOutline } from "react-icons/io5";
+import { fetchUserDetails } from "../Reducer/Auth/authReducer";
 
 
 const SideBar: React.FC = () => {
@@ -19,6 +20,12 @@ const SideBar: React.FC = () => {
   };
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate(); //use to jump on different pages
+
+  // 👇 when the component is mount for the first time we use the useEffect 
+  useEffect(()=>{
+   dispatch(fetchUserDetails())
+  },[dispatch])
+
 
   return (
     <>

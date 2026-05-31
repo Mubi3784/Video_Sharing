@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SideBar from "../../Components/SideBar";
+import { useSelector } from "react-redux";
+import { selectLoggedInUser } from "../../Reducer/Auth/authReducer";
 
 const UserProfile: React.FC = () => {
   // useState , one can store the value and one can chamge the value
@@ -7,17 +9,28 @@ const UserProfile: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [edit, setEdit] = useState<boolean>(false);
   //  its another way to change the input field while typing in it
+
+  const loggedInUser = useSelector(selectLoggedInUser);
+
+  useEffect(() => {
+    if (loggedInUser?.name) {
+      setName(loggedInUser.name)
+    }
+    if(loggedInUser?.email){
+      setEmail(loggedInUser.email)
+    }
+  },[loggedInUser])
   return (
     <div className=" h-screen w-full bg-gray-50 ">
       <SideBar />
-      <main className=" ml-4 flex-1   md:ml-80 z-10 min-h-screen pt-4 -r-4  text-center">
+      <main className=" ml-4 flex-1   md:ml-80 z-10 min-h-screen pt-4 -r-4   text-center">
         <section className="bg-white border border-gray-500 mt-12 rounded-2xl mx-2 p-6 shadow-sm">
           <h1 className="  mt-4 text-2xl font-bold ">Profile Details</h1>
 
           {/* inputs div */}
           <div className="flex  flex-row  ">
             <div className="flex flex-col   mt-4     w-full  ">
-              {/* name field */}   
+              {/* name field */}
               <div className=" flex flex-col pl-4 w-full  ">
                 <label
                   htmlFor="name"
@@ -59,9 +72,11 @@ const UserProfile: React.FC = () => {
 
               {/* button */}
               <div className="flex justify-end mt-5 pr-5">
-                <button className="font-medium text-white bg-blue-600 h-9 w-15 rounded-sm  "
-                onClick={()=>setEdit(!edit)}>
-
+                <button
+                  type="button"
+                  className="font-medium text-white bg-blue-600 h-9 px-4 rounded-sm"
+                  onClick={() => setEdit(!edit)}
+                >
                   {edit ? "Save" : "Edit"}
                 </button>
               </div>

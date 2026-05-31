@@ -75,19 +75,20 @@ export const signInUser = createAsyncThunk<
     string,
     SignInPayload,
     { rejectValue: string }
+
 >(
     'auth/sign-in-user', async (payload, thunkApi) => {
         try {
-            const {email,password}=payload;
-            const { data } = await backendApi.post<AuthResponse>("/api/v1/auth/signin", 
-                {email,password}
+            const { email, password } = payload;
+            const { data } = await backendApi.post<AuthResponse>("/api/v1/auth/signin",
+                { email, password }
             );
-            if (data.success&& data.user?.token) {
+            if (data.success && data.user?.token) {
                 if (data.user) {
                     toast.success(data.message);
                 }
                 return data.user.token;
-                
+
                 // todo display user page 
 
             }
@@ -108,6 +109,38 @@ export const signInUser = createAsyncThunk<
 )
 
 
+// data Fetching for userprofile 
+// we have write the void  because we are not getting any payload from the component  and we are not passing any argument to the function
+// "_" we use this in the function parameter beacuse we are not getting any payload 
+export const fetchUserDetails = createAsyncThunk<User | null, void, { rejectValue: String }>('auth/fetch-user-details', async (_, thunkApi) => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            return thunkApi.rejectWithValue("No authorization token found")
+        };
+        const { data } = await backendApi("/api/v1/user/profile", {
+            headers: {
+                Authorization: `Bearer ${token}`,  // pass the token in header
+            },
+        })
+        if (data.success) {
+            return data.user;
+        }
+        else {
+            return thunkApi.rejectWithValue(data.message);
+        }
+
+
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            const message = error.response?.data?.message;
+            toast.error(message || "Something went wrong");
+            return thunkApi.rejectWithValue(message || "Something went wrong");
+        }
+        return thunkApi.rejectWithValue("Something went wrong");
+    }
+})
+
 
 // the slice  gives us the reducer function  and auto created action  creators 
 // reducer is the function  that handles the states changes ,
@@ -123,14 +156,24 @@ const authSlice = createSlice({
             })
             .addCase(signInUser.fulfilled, (state, action) => {
                 state.loading = false;
-                if(action.payload){
-                    localStorage.setItem("token",action.payload)
+                if (action.payload) {
+                    localStorage.setItem("token", action.payload)
                 }
             })
             .addCase(signInUser.rejected, (state) => {
                 state.loading = false;
             })
- 
+            .addCase(fetchUserDetails.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(fetchUserDetails.fulfilled, (state, action) => {
+                state.loggedInUser=action.payload;
+                state.loading=false;
+            })
+            .addCase(fetchUserDetails.rejected, (state) => {
+                state.loading = false;
+            })
+
     }
 })
 
