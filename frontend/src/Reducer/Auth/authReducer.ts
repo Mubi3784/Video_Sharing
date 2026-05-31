@@ -3,6 +3,7 @@ import type { RootState } from "../store";
 import backendApi from "../../Api/backendApi";
 import axios from 'axios';
 import { toast } from 'sonner';
+import {  type NavigateFunction } from "react-router-dom";
 
 
 
@@ -12,7 +13,7 @@ interface User {
     email: string;
     name?: string;//this mean optional
     token: string;
-    uploadCound: number;
+    uploadCount: number;
     downloadCount: number;
 
 }
@@ -30,6 +31,7 @@ interface SignUpPayload {
 interface SignInPayload {
     email: string;
     password: string;
+    navigate:NavigateFunction
 
 }
 interface AuthResponse {
@@ -79,13 +81,14 @@ export const signInUser = createAsyncThunk<
 >(
     'auth/sign-in-user', async (payload, thunkApi) => {
         try {
-            const { email, password } = payload;
+            const { email, password,navigate} = payload;
             const { data } = await backendApi.post<AuthResponse>("/api/v1/auth/signin",
                 { email, password }
             );
             if (data.success && data.user?.token) {
                 if (data.user) {
                     toast.success(data.message);
+                    navigate("/user/profile")
                 }
                 return data.user.token;
 
@@ -148,7 +151,15 @@ export const fetchUserDetails = createAsyncThunk<User | null, void, { rejectValu
 const authSlice = createSlice({
     name: "auth",
     initialState,
-    reducers: {},
+    reducers: {
+        logOutUser:(state,action)=>{
+            const navigate=action.payload;
+            localStorage.removeItem("token");
+            state.loggedInUser=null;
+            toast.info("We will miss You");
+            navigate("/signIn")
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(signInUser.pending, (state) => {
@@ -179,4 +190,5 @@ const authSlice = createSlice({
 
 export const authReducer = authSlice.reducer;
 export const selectLoggedInUser = (state: RootState) => state.auth.loggedInUser
+export const {logOutUser}= authSlice.actions
 export const selectLoading = (state: RootState) => state.auth.loading

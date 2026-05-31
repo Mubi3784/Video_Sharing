@@ -9,7 +9,7 @@ import { LuUpload } from "react-icons/lu";
 import { HiMiniVideoCamera } from "react-icons/hi2";
 import { SlSettings } from "react-icons/sl";
 import { IoLogOutOutline } from "react-icons/io5";
-import { fetchUserDetails } from "../Reducer/Auth/authReducer";
+import { fetchUserDetails, logOutUser } from "../Reducer/Auth/authReducer";
 
 
 const SideBar: React.FC = () => {
@@ -91,8 +91,8 @@ const SideBar: React.FC = () => {
 
             <li>
               <NavLink
-                to={"/"}
-                onClick={toggleSideBar}
+                 
+                onClick={()=>{dispatch(logOutUser(navigate))}}
                 className={` flex  gap-5 items-center hover:text-blue-300 md:hover:text-blue-700 text-2xl  `}
               >
                 <IoLogOutOutline size={25}></IoLogOutOutline>

@@ -1,11 +1,11 @@
 import React from "react";
 import Layout from "../../Components/Layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import type { authFormData } from "../../type";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "../../Reducer/store";
-import { signInUser } from "../../Reducer/Auth/authReducer";
+import { selectLoading, signInUser } from "../../Reducer/Auth/authReducer";
 
 // now we are using the state. An array distructor  having formData(which holds the data ) and setFormData( a function which is used to change the data )
 
@@ -13,6 +13,10 @@ import { signInUser } from "../../Reducer/Auth/authReducer";
 
 
 const SignIn: React.FC = () => {
+  // 👇 ye ham user ko redirect karny ky liye use kar rahy hain , taky wo user profile main direct jaye 
+  const navigate= useNavigate();
+  // 👇 ye loading ham is liye use kar rahy hain taky loading kay wqt button ka text change kar saky or slectloading authReducer say aya hy 
+  const loading=useSelector(selectLoading);
   const dispatch= useDispatch<AppDispatch>();
 const [formData, setFormData] = useState<authFormData>({
   email: "",
@@ -32,7 +36,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   // to stop the refresh on clicking the submit button we are using this 👇
   e.preventDefault();
   const { email ,password}=formData
-  dispatch(signInUser({email ,password}))
+  dispatch(signInUser({email ,password, navigate}))
 };
   return (
     <Layout>
@@ -88,8 +92,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             />
 
             {/* button */}
-            <button className=" mt-2 bg-green-600 rounded-2xl w-full px-4 py-2 text-white font-semibold transition-colors hover:bg-[#00b861]">
-              Sign In
+            <button className=" mt-2 bg-green-600 rounded-2xl w-full px-4 py-2 text-white font-semibold transition-colors hover:bg-[#00b861]"
+            disabled={loading}
+            >
+              {loading ? "Verfying...": "Sign In"}
             </button>
           </form>
           <Link to={"/signUp"} className="mt-1  font-semibold text-blue-800">

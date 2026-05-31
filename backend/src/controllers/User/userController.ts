@@ -14,7 +14,15 @@ export const  getUserDetails:AuthenticatedRequestHandler= async ( req , res )=>{
              if(!user){
                 return sendResponse(res, 400, false, "User not found");
              }
-             sendResponse(res, 200, true, "User details found ")
+             sendResponse(res, 200, true, "User details found ",{
+                user:{
+                    _id:user.id,
+                    email:user.email,
+                    name:user.name,
+                    uploadCount:user.uploadCount,
+                    downloadCount:user.downloadCount,
+                }
+             })
         }
     } catch (error) {
         console.error(`error Occur ${error}`)
