@@ -3,7 +3,7 @@ import type { RootState } from "../store";
 import backendApi from "../../Api/backendApi";
 import axios from 'axios';
 import { toast } from 'sonner';
-import {  type NavigateFunction } from "react-router-dom";
+import { type NavigateFunction } from "react-router-dom";
 
 
 
@@ -31,10 +31,10 @@ interface SignUpPayload {
 interface SignInPayload {
     email: string;
     password: string;
-    navigate:NavigateFunction
+    navigate: NavigateFunction
 
 }
-interface AuthResponse {
+export interface AuthResponse {
     success: boolean,
     message: string,
     user?: User,
@@ -81,7 +81,7 @@ export const signInUser = createAsyncThunk<
 >(
     'auth/sign-in-user', async (payload, thunkApi) => {
         try {
-            const { email, password,navigate} = payload;
+            const { email, password, navigate } = payload;
             const { data } = await backendApi.post<AuthResponse>("/api/v1/auth/signin",
                 { email, password }
             );
@@ -152,12 +152,19 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        logOutUser:(state,action)=>{
-            const navigate=action.payload;
+        logOutUser: (state, action) => {
+            const navigate = action.payload;
             localStorage.removeItem("token");
-            state.loggedInUser=null;
+            state.loggedInUser = null;
             toast.info("We will miss You");
             navigate("/signIn")
+        },
+        updateUser: (state,action) =>{
+            const {name, email}=action.payload;
+            if(state.loggedInUser){
+                state.loggedInUser.name=name;
+                state.loggedInUser.email=email;
+            }
         }
     },
     extraReducers: (builder) => {
@@ -178,8 +185,8 @@ const authSlice = createSlice({
                 state.loading = true;
             })
             .addCase(fetchUserDetails.fulfilled, (state, action) => {
-                state.loggedInUser=action.payload;
-                state.loading=false;
+                state.loggedInUser = action.payload;
+                state.loading = false;
             })
             .addCase(fetchUserDetails.rejected, (state) => {
                 state.loading = false;
@@ -190,5 +197,5 @@ const authSlice = createSlice({
 
 export const authReducer = authSlice.reducer;
 export const selectLoggedInUser = (state: RootState) => state.auth.loggedInUser
-export const {logOutUser}= authSlice.actions
+export const { logOutUser , updateUser } = authSlice.actions
 export const selectLoading = (state: RootState) => state.auth.loading

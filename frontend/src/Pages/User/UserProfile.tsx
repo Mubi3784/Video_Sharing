@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import SideBar from "../../Components/SideBar";
 import { useSelector } from "react-redux";
-import { selectLoggedInUser } from "../../Reducer/Auth/authReducer";
+import { selectLoggedInUser, type AuthResponse } from "../../Reducer/Auth/authReducer";
+import { toast } from "sonner";
+import backendApi from "../../Api/backendApi";
+import {userConfig} from "../../Components/customHooks/userConfigHook";
 
 const UserProfile: React.FC = () => {
   // useState , one can store the value and one can chamge the value
@@ -11,15 +14,41 @@ const UserProfile: React.FC = () => {
   //  its another way to change the input field while typing in it
 
   const loggedInUser = useSelector(selectLoggedInUser);
+  const dispatch=useDispatch()
+  const {configWithJWT}=userConfig();
 
   useEffect(() => {
     if (loggedInUser?.name) {
       setName(loggedInUser.name)
     }
-    if(loggedInUser?.email){
+    if (loggedInUser?.email) {
       setEmail(loggedInUser.email)
     }
-  },[loggedInUser])
+  }, [loggedInUser])
+
+  const handleEditClick = () => {
+    setEdit((prev) => !prev);
+  }
+ 
+
+  const handleSaveClick = async () => {
+    try {
+      const { data } = await backendApi.post<AuthResponse>("/api/v1/user/update", { name, email }, 
+        configWithJWT
+      );
+      if (data.success) {
+        toast.success(data.message);
+        dispatch(updateUser(name, email))
+        setEdit(false);
+      }
+      else {
+        toast.warning(data.message)
+      }
+
+    } catch (error) {
+      toast.error("Internal server error , Please try again later ")
+    }
+  }
   return (
     <div className=" h-screen w-full bg-gray-50 ">
       <SideBar />
@@ -75,7 +104,7 @@ const UserProfile: React.FC = () => {
                 <button
                   type="button"
                   className="font-medium text-white bg-blue-600 h-9 px-4 rounded-sm"
-                  onClick={() => setEdit(!edit)}
+                  onClick={() => edit ? handleSaveClick() : handleEditClick()}
                 >
                   {edit ? "Save" : "Edit"}
                 </button>
