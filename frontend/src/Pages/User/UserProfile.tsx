@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SideBar from "../../Components/SideBar";
-import { useSelector } from "react-redux";
-import { selectLoggedInUser, type AuthResponse } from "../../Reducer/Auth/authReducer";
+import { useDispatch, useSelector } from "react-redux";
+import { selectLoggedInUser, updateUser, type AuthResponse } from "../../Reducer/Auth/authReducer";
 import { toast } from "sonner";
 import backendApi from "../../Api/backendApi";
 import {userConfig} from "../../Components/customHooks/userConfigHook";
@@ -15,7 +15,7 @@ const UserProfile: React.FC = () => {
 
   const loggedInUser = useSelector(selectLoggedInUser);
   const dispatch=useDispatch()
-  const {configWithJWT}=userConfig();
+  const configWithJWT = userConfig();
 
   useEffect(() => {
     if (loggedInUser?.name) {
@@ -38,7 +38,7 @@ const UserProfile: React.FC = () => {
       );
       if (data.success) {
         toast.success(data.message);
-        dispatch(updateUser(name, email))
+        dispatch(updateUser({name, email}))
         setEdit(false);
       }
       else {

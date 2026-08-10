@@ -51,6 +51,11 @@ const initialState: AuthState = {
 
 
 
+
+
+
+
+
 //sign up request to the backend
 export const signUpUser = createAsyncThunk<void, SignUpPayload, { rejectValue: string }>
     ('auth/sign-up-user', async (payload) => {
@@ -160,7 +165,7 @@ const authSlice = createSlice({
             navigate("/signIn")
         },
         updateUser: (state,action) =>{
-            const {name, email}=action.payload;
+            const {name, email }=action.payload;
             if(state.loggedInUser){
                 state.loggedInUser.name=name;
                 state.loggedInUser.email=email;

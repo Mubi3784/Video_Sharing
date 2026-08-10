@@ -4,6 +4,7 @@ import { sendResponse } from "../../utils/sendResponse"
 import { generateWebToken } from "../../utils/generateJwtToken";
 import crypto from "crypto";
 import { hashPassword, comparePassword } from "../../utils/passwordHelper";
+import { resetPasswordEmail } from "../../mailer/resetPasswords";
 
 interface RegisterReq extends Request {
     body: {
@@ -67,5 +68,27 @@ export const signInUser: RequestHandler = async (req: RegisterReq, res: Response
         console.error(`Error in autentication ${error}`);
         return sendResponse(res, 500, false, "Internal server error");
 
+    }
+}
+
+
+//  function to call the funtion written in the D:\document\Self Learning\Full_Stack\Projects\Project_1\Video_Sharing_App\backend\src\mailer\resetPasswords.ts
+
+export const sendEmailForResetPassword: RequestHandler= async (req, res)=>{
+    try {
+        const {email} = req.body;
+    if(!email){
+         return sendResponse(res,404, false,"email not found ");
+    }
+    const user= await  User.findOne(email);
+    if(!user){
+        return sendResponse(res,404, false, "user not found ")
+
+    }
+    await resetPasswordEmail(user)
+        
+    } catch (error) {
+        console.error(`Error in  sending email ${error}`)
+        return sendResponse(res, 500 ,false, "Internal server Error")
     }
 }
