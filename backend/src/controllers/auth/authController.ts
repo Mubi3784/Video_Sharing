@@ -80,13 +80,16 @@ export const sendEmailForResetPassword: RequestHandler= async (req, res)=>{
     if(!email){
          return sendResponse(res,404, false,"email not found ");
     }
-    const user= await  User.findOne(email);
+    const user= await  User.findOne({email});
     if(!user){
         return sendResponse(res,404, false, "user not found ")
 
     }
-    await resetPasswordEmail(user)
-        
+    if (!user.token) {
+        return sendResponse(res, 400, false, "Unable to reset password. Please try again.");
+    }
+    await resetPasswordEmail(user, user.token)
+        return sendResponse(res, 200, true, "Reset password email sent");
     } catch (error) {
         console.error(`Error in  sending email ${error}`)
         return sendResponse(res, 500 ,false, "Internal server Error")
