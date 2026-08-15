@@ -7,9 +7,9 @@ import path from "path";
 dotenv.config();
 
 export const resetPasswordEmail = async (user: IUser, token: string) => {
-    try {
+    
         const emailHtml = await ejs.renderFile(
-            path.join(__dirname, "../view/resetPassword"),
+            path.join(__dirname, "../view/resetPassword.ejs"),
             { token }
         );
 
@@ -21,7 +21,5 @@ export const resetPasswordEmail = async (user: IUser, token: string) => {
         };
 
         await transporter.sendMail(options);
-    } catch (error) {
-        console.error(`Error in sending reset password ${error}`);
-    }
+     
 };

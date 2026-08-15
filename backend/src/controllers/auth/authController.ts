@@ -1,97 +1,129 @@
-import { Request, Response, RequestHandler } from "express"
-import User from "../../model/userSchema"
-import { sendResponse } from "../../utils/sendResponse"
+import { Request, Response, RequestHandler } from "express";
+import User from "../../model/userSchema";
+import { sendResponse } from "../../utils/sendResponse";
 import { generateWebToken } from "../../utils/generateJwtToken";
 import crypto from "crypto";
 import { hashPassword, comparePassword } from "../../utils/passwordHelper";
 import { resetPasswordEmail } from "../../mailer/resetPasswords";
 
 interface RegisterReq extends Request {
-    body: {
-        email: string,
-        password: string
-    }
+  body: {
+    email: string;
+    password: string;
+  };
 }
 //
 export const signUpUser = async (req: RegisterReq, res: Response) => {
-    try {
-        const { email, password } = req.body;
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return sendResponse(res, 400, false, "User already exists")
-        }
-
-        // making the password hashed before saving to database 
-        const hashedPassword = await hashPassword(password);
-        // we have romove this " const user ="
-        await User.create(
-            {
-                email,
-                password: hashedPassword,
-                token: crypto.randomBytes(16).toString("hex")
-            }
-        )
-        // send respronse successfully 
-        return sendResponse(res, 200, true, "user added successfully ") // here we remove this{user: newUser}
+  try {
+    const { email, password } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return sendResponse(res, 400, false, "User already exists");
     }
-    catch (error) {
-        console.error(`Error in Signup ${error}`)
-        //send a error response 
-        return sendResponse(res, 500, false, " internal error ")
+
+    // making the password hashed before saving to database
+    const hashedPassword = await hashPassword(password);
+    // we have romove this " const user ="
+    await User.create({
+      email,
+      password: hashedPassword,
+      token: crypto.randomBytes(16).toString("hex"),
+    });
+    // send respronse successfully
+    return sendResponse(res, 200, true, "user added successfully "); // here we remove this{user: newUser}
+  } catch (error) {
+    console.error(`Error in Signup ${error}`);
+    //send a error response
+    return sendResponse(res, 500, false, " internal error ");
+  }
+};
+
+export const signInUser: RequestHandler = async (
+  req: RegisterReq,
+  res: Response,
+) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return sendResponse(res, 404, false, "User doesnot exists");
     }
-}
-
-
-export const signInUser: RequestHandler = async (req: RegisterReq, res: Response) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email })
-        if (!user) {
-            return sendResponse(res, 404, false, "User doesnot exists")
-        }
-        const matchPassword = await comparePassword(password, user.password)
-        if (!matchPassword) {
-            return sendResponse(res, 404, false, "Invalid Username and Password")
-        }
-        const jwtToken = await generateWebToken(user);
-        sendResponse(res, 200, true, "logged in successfully ", {
-            user: {
-                _id: user._id,
-                email: user.email,
-                token: jwtToken,
-                uploadCount: user.uploadCount,
-                downloadCount: user.downloadCount,
-            }
-        })
-
-    } catch (error) {
-        console.error(`Error in autentication ${error}`);
-        return sendResponse(res, 500, false, "Internal server error");
-
+    const matchPassword = await comparePassword(password, user.password);
+    if (!matchPassword) {
+      return sendResponse(res, 404, false, "Invalid Username and Password");
     }
-}
-
+    const jwtToken = await generateWebToken(user);
+    sendResponse(res, 200, true, "logged in successfully ", {
+      user: {
+        _id: user._id,
+        email: user.email,
+        token: jwtToken,
+        uploadCount: user.uploadCount,
+        downloadCount: user.downloadCount,
+      },
+    });
+  } catch (error) {
+    console.error(`Error in autentication ${error}`);
+    return sendResponse(res, 500, false, "Internal server error");
+  }
+};
 
 //  function to call the funtion written in the D:\document\Self Learning\Full_Stack\Projects\Project_1\Video_Sharing_App\backend\src\mailer\resetPasswords.ts
 
-export const sendEmailForResetPassword: RequestHandler= async (req, res)=>{
-    try {
-        const {email} = req.body;
-    if(!email){
-         return sendResponse(res,404, false,"email not found ");
+export const sendEmailForResetPassword: RequestHandler = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return sendResponse(res, 404, false, "email not found ");
     }
-    const user= await  User.findOne({email});
-    if(!user){
-        return sendResponse(res,404, false, "user not found ")
-
+    const user = await User.findOne({ email });
+    if (!user) {
+      return sendResponse(res, 404, false, "user not found ");
     }
     if (!user.token) {
-        return sendResponse(res, 400, false, "Unable to reset password. Please try again.");
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Unable to reset password. Please try again.",
+      );
     }
-    await resetPasswordEmail(user, user.token)
-        return sendResponse(res, 200, true, "Reset password email sent");
-    } catch (error) {
-        console.error(`Error in  sending email ${error}`)
-        return sendResponse(res, 500 ,false, "Internal server Error")
+    await resetPasswordEmail(user, user.token);
+
+    return sendResponse(res, 200, true, "Reset password email sent");
+  } catch (error) {
+    console.error(`Error in  sending email ${error}`);
+    return sendResponse(res, 500, false, `Internal server Error ${error}`);
+  }
+};
+
+// updating the password
+
+export const updatePassword: RequestHandler = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!token) {
+      return sendResponse(res, 404, false, " Token not found");
     }
-}
+    const user = await User.findOne({ token });
+    if (!user) {
+      return sendResponse(res, 404, false, "User not found ");
+    }
+    const hashedPassword= await hashPassword(password);
+    user.password=hashedPassword;
+    await user.save();
+    sendResponse(res,200,true,'Password updated successfuly')
+
+  } catch (error) {
+    console.error(` error in updating email function ${error}`);
+    return sendResponse(
+      res,
+      500,
+      false,
+      
+      `Internal server error ${error}`,
+    );
+  }
+};
