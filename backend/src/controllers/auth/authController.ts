@@ -111,10 +111,11 @@ export const updatePassword: RequestHandler = async (req, res) => {
     if (!user) {
       return sendResponse(res, 404, false, "User not found ");
     }
-    const hashedPassword= await hashPassword(password);
-    user.password=hashedPassword;
+    const hashedPassword = await hashPassword(password);
+    user.password = hashedPassword;
+    user.token = crypto.randomBytes(16).toString("hex");
     await user.save();
-    sendResponse(res,200,true,'Password updated successfuly')
+    return sendResponse(res, 200, true, "Password updated successfuly");
 
   } catch (error) {
     console.error(` error in updating email function ${error}`);
