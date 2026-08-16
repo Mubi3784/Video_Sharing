@@ -91,8 +91,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
               onChange={handleChange}
             />
 
+            {/* forgot password */}
+            <Link to={"/resetPassword"} className=" text-sm   font-medium text-blue-800">
+            {" "}
+            Forgot Password
+          </Link>
             {/* button */}
-            <button className=" mt-2 bg-green-600 rounded-2xl w-full px-4 py-2 text-white font-semibold transition-colors hover:bg-[#00b861]"
+            <button className=" mt-1 bg-green-600 rounded-2xl w-full px-4 py-2 text-white font-semibold transition-colors hover:bg-[#00b861]"
             disabled={loading}
             >
               {loading ? "Verfying...": "Sign In"}
