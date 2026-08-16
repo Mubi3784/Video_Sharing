@@ -9,6 +9,7 @@ import { UpdatePassword } from "./Pages/Auth/UpdatePassword";
 
 
 
+
 // in the function parameter make an array  and define each route here  with path and element
 const router=createBrowserRouter([
 

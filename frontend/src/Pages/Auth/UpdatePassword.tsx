@@ -20,7 +20,7 @@ const handleSubmit=async(e:React.FormEvent<HTMLFormElement>)=>{
 try {
     setLoading(true);
     e.preventDefault();
-    const {data} = await backendApi.post<UpdatePasswordResponse>(`api/v1/auth/updatePassword/${token}`)
+    const {data} = await backendApi.post<UpdatePasswordResponse>(`api/v1/auth/updatePassword/${token}`, {password})
     if(data.success){
         toast.success(data.message)
         navigate("/signin");
