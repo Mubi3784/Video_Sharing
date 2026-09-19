@@ -59,7 +59,7 @@ const SideBar: React.FC = () => {
             </li>
             <li>
               <NavLink
-                to={"/"}
+                to={"/uploadVideo"}
                 onClick={toggleSideBar}
                 className={` flex  gap-5 items-center hover:text-blue-300 md:hover:text-blue-700 text-2xl  `}
               >

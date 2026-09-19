@@ -14,7 +14,7 @@ params: async (req, file)=>{
     const fileName=`${baseName}-${Date.now()}-${file.fieldname}`
     return{
         folder:folder,
-        public_Id:fileName,
+        public_id:fileName,
         resource_type:file.fieldname === "video"? "video":"image",
     }
 }

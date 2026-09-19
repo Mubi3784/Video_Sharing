@@ -6,7 +6,7 @@ import UserProfile from "./Pages/User/UserProfile";
 import { ProtectedRoute, ProtectedRouteHome } from "./Components/ProtectedRoute";
 import { ResetPasswordEmail } from "./Pages/Auth/ResetPasswordEmail";
 import { UpdatePassword } from "./Pages/Auth/UpdatePassword";
-
+import UploadVideo from "./Pages/Video/UploadVideo";
 
 
 
@@ -17,8 +17,10 @@ const router=createBrowserRouter([
     {path:"/signUp", element: <ProtectedRoute element={<SignUp />} />},
     {path:"/signIn",element:<ProtectedRoute element={<SignIn />} />},
     {path:"/user/profile",element:<ProtectedRouteHome element={<UserProfile />} />},
+    // {path:"/user/profile",element:<UserProfile />},
     {path:"/resetPassword",element:<ProtectedRoute element={<ResetPasswordEmail />} />},
-    {path:"/resetPassword/:token",element:<ProtectedRoute element={<UpdatePassword />} />}
+    {path:"/resetPassword/:token",element:<ProtectedRoute element={<UpdatePassword />} />},
+    {path:"/uploadVideo",element:<UploadVideo />}
 
 ])
 

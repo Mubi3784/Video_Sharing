@@ -8,7 +8,7 @@ import { send } from "process";
 
 export const uploadFile: RequestHandler = async (req, res) => {
   try {
-    if (req.file && (req.files as any).video) {
+    if (req.files && (req.files as any).video) {
       let { title, description } = req.body;
       let baseName;
       const videoFile = (req.files as any).video[0];
