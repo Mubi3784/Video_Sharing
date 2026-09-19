@@ -16,8 +16,11 @@ const router=createBrowserRouter([
      
     {path:"/signUp", element: <ProtectedRoute element={<SignUp />} />},
     {path:"/signIn",element:<ProtectedRoute element={<SignIn />} />},
+    
     {path:"/user/profile",element:<ProtectedRouteHome element={<UserProfile />} />},
     // {path:"/user/profile",element:<UserProfile />},
+
+
     {path:"/resetPassword",element:<ProtectedRoute element={<ResetPasswordEmail />} />},
     {path:"/resetPassword/:token",element:<ProtectedRoute element={<UpdatePassword />} />},
     {path:"/uploadVideo",element:<UploadVideo />}

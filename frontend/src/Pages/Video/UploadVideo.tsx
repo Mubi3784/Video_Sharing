@@ -50,6 +50,7 @@ const UploadVideo: React.FC = () => {
         e.preventDefault();
 
         if (!validateForm()) {
+               toast.warning("Please fix the highlighted fields before uploading");
             return;
         }
 
@@ -72,8 +73,7 @@ const UploadVideo: React.FC = () => {
                 formData,
                 {
                     headers: {
-                        ...configWithJWT.headers,
-                        "Content-Type": "multipart/form-data",
+                        ...configWithJWT.headers, 
                     },
                 }
             );
